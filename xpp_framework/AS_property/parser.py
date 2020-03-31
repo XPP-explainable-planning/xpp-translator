@@ -1,6 +1,5 @@
 from xpp_framework.action_sets.action import *
-from .property import *
-
+from .action_set_property import *
 
 
 def parse_action_set_property(lines):
@@ -16,7 +15,7 @@ def parse_action_set_property(lines):
     #parse prefix notion logic formula
     property_string = line.replace("\n","")
     (formula, rest, constants) = logic_formula.parseFormula(property_string)
-    asProperty = actionSetProperty(name, soft, formula, constants)
+    asProperty = ActionSetProperty(name, formula, constants)
 
     return asProperty
 

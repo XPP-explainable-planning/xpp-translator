@@ -1,9 +1,9 @@
 from . import AS_property
 from . import action_sets
-from . import entailment
 from . import LTL_property
 from .parser import parse
-from . import question
+from .general import question
+
 
 def run(options, task, sas_task):
     properties_path = options.plan_property

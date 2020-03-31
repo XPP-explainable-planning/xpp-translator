@@ -1,16 +1,18 @@
 from .parse_SPIN_automata import *
-import xpp_framework.logic.logic_formula as logic_formula
-import re
+from xpp_framework.general.property import PlanProperty
+from xpp_framework.action_sets.action import ActionSet
 import os
 
 
-
-class LTLProperty:
+class LTLProperty(PlanProperty):
 
     def __init__(self, name, formula, constants):
-        self.name = name
-        self.formula = formula
+        super().__init__(name, formula)
+        self.constants = constants
 
+        # automaton representation
+        self.genericFormula = None
+        self.automata = None
         self.generateAutomataRepresentation(constants)
         
     def SAS_repr(self, actionSets):
@@ -58,8 +60,13 @@ class LTLProperty:
         #replace the generic variable name with the original state facts
         self.automata.replaceConstantsName(constant_name_map)
 
-        
-
+    @staticmethod
+    def fromJSON(json, typeObjectMap):
+        (formula, rest, constants) = logic_formula.parseFormula(json['formula'])
+        new_property = LTLProperty(json['name'], formula, constants)
+        for actionSets_json in json['action-sets']:
+            new_property.add_action_set(ActionSet.fromJSON(actionSets_json, typeObjectMap, True))
+        return new_property
 
     def __repr__(self):
         s = self.name + ":\n\t" + str(self.formula)

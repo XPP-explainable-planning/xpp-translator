@@ -7,7 +7,6 @@ class Action:
         self.string = string
         self.params = []
 
-
     def copy(self):
         nAction = Action(self.name, self.string)
         for p in self.params:
@@ -17,8 +16,32 @@ class Action:
    
 
     def addParam(self, param):
-        self.params.append(param.replace(" ",""))
+        self.params.append(param.replace(" ", ""))
 
+    @staticmethod
+    def fromJSON(json, typeObjectMap):
+        newAction = Action(json["name"], None)
+
+        for param in json["args"]:
+
+            # if the param is a type instantiate the action with each object of the corresponsing type
+            # it does not matter if any of the combinations does not exists in the planning task
+            if param in typeObjectMap:
+                newAction.addParam("*")
+
+            else:
+                # if the param is an object just use the object
+                # check if the object exists in the planning instance
+                found = False
+                for (o_type, objects) in typeObjectMap.items():
+                    if param in objects:
+                        found = True
+                        break
+                assert found, "Param: " + param + " of action " + newAction.name + " not found in planning task."
+
+                newAction.addParam(param)
+
+        return newAction
 
     def __repr__(self):
         s = "(" + self.name.lower() + " "
@@ -29,6 +52,7 @@ class Action:
         s += ")"
 
         return s
+
 
 class ActionSet:
 
@@ -67,6 +91,14 @@ class ActionSet:
     def genSetDefinition(self):
         #TODO 
         return None
+
+    @staticmethod
+    def fromJSON(json, typeObjectMap, state_set):
+        newActionSet = ActionSet(json["name"], state_set)
+        for json_action in json["actions"]:
+            newActionSet.addAction(Action.fromJSON(json_action, typeObjectMap))
+        return newActionSet
+
 
     def __eq__(self, other):
         return self.name == other.name

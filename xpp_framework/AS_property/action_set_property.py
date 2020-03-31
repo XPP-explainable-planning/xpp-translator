@@ -1,27 +1,54 @@
-from . import parser
-from . import ASPcompilation
-
-def addActionSetPropertiesToTask(path, task, sas_task, options, addGoalFacts, addNegSatActions):
-    
-
-    # parse action sets and properties
-    asps = parser.parseActionSetProperty(path, typeObjectMap)
-
-    #compile properties into sas_task
-
-    print("property_compilation_type: " + str(options.property_compilation_type))
-    if options.property_compilation_type == None or options.property_compilation_type == 0:
-        ASPcompilation.compileToTask(sas_task, asps, addPropertiesToGoal=addGoalFacts, addNegativeSatActions=addNegSatActions)
-       
-        return asps
-
-    if options.property_compilation_type == 1:
-        print("Properties folder: " + options.properties_folder)
-        asps.generateImpPropertyFiles(options.properties_folder)
-        return asps
+import xpp_framework.logic.logic_formula as logic_formula
+from xpp_framework.general.property import PlanProperty
+from xpp_framework.action_sets.action import ActionSet
 
 
+class ActionSetProperty(PlanProperty):
 
-    
+    def __init__(self, name, formula, constants=[]):
+        super().__init__(name, formula)
+        # names of the set names that are used in the property
+        self.constants = constants
 
+    # used to generate one instance of the property in a propertylass
+    def generateInstance(self, instance_postfix):
+        formula_instance = self.formula.addPostfix(instance_postfix)
+        instance_constants = []
+        for c in self.constants:
+            instance_constants.append(c +instance_postfix)
 
+        return ActionSetProperty(self.name + instance_postfix, formula_instance, instance_constants)
+
+    def containsSet(self, set_name):
+        return set_name in self.constants 
+
+    def getClauses(self):
+        if(isinstance(self.formula, logic_formula.LOr)): #TODO
+            return self.formula.getClauses([])
+        else:
+            return [self.formula.getClauses([])]
+
+    def get_negated_Clauses(self):
+        neg_formula = self.formula.negate()
+        DNF_neg_formula = neg_formula.toDNF()
+        if(isinstance(DNF_neg_formula, logic_formula.LOr)): #TODO
+            return DNF_neg_formula.getClauses([])
+        else:
+            return [DNF_neg_formula.getClauses([])]
+
+    @staticmethod
+    def fromJSON(json, typeObjectMap):
+        (formula, rest, constants) = logic_formula.parseFormula(json['formula'])
+        new_property = ActionSetProperty(json['name'], formula, constants)
+        for actionSets_json in json['action-sets']:
+            new_property.add_action_set(ActionSet.fromJSON(actionSets_json, typeObjectMap, False))
+        return new_property
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name + ": \n\t" + str(self.formula)
