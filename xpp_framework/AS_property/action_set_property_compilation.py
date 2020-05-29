@@ -34,14 +34,16 @@ def addChangePhase(sas_task):
     return eval_phase_var_id
 
 
-def addPropertySatVariables(sas_task, prop, addToGoal=True):
+def addPropertySatVariables(sas_task, prop, addToGoal=False):
     # compile property into one (goal) fact 
     #fact that indicates if the property is satisfied at the end of the plan
     prop.var_id = len(sas_task.variables.value_names)
-    soft_prefix = "hard"
-    if prop.soft:
-        soft_prefix = "soft"
-    prop_vars = [soft_prefix + "_not_sat_" + prop.name, soft_prefix + "_sat_" + prop.name]
+    # TODO implete separate handling of soft and hard goal identification
+    #soft_prefix = "hard"
+    # if prop.soft:
+    #     soft_prefix = "soft"
+    #prop_vars = [soft_prefix + "_not_sat_" + prop.name, soft_prefix + "_sat_" + prop.name]
+    prop_vars = ["not_sat_" + prop.name, "sat_" + prop.name]
 
     #print(prop.name + " : " + str(prop.var_id))
 
@@ -52,9 +54,9 @@ def addPropertySatVariables(sas_task, prop, addToGoal=True):
     # update initial state -> at the beginning the property is not satisfied
     sas_task.init.values.append(0)
 
-    if addToGoal:
-        #update goal -> at the end the property has to be satisfied
-        sas_task.goal.pairs.append((prop.var_id, 1))
+    # if addTo:
+        # update goal -> at the end the property has to be satisfied
+        # sas_Goaltask.goal.pairs.append((prop.var_id, 1))
 
 
 
@@ -72,7 +74,6 @@ def addPropertyCheckingActions(sas_task, prop, actionSets, eval_phase_var_id):
         # literals form the preconditions
         for l in c:
             assert l.constant.name in actionSets, "action set " + l.constant.name + " does not exist."
-            #print(l.constant.name)
             if l.negated:
                 pre_post.append((actionSets[l.constant.name].var_id,0,0,[]))
             else:
@@ -103,7 +104,7 @@ def specifySoftGoals(sas_task, asp):
                     sas_task.variables.value_names[i][j] = "soft_" + value_name
 
 
-def compileActionSetProperties(sas_task, properties, actionSets, addPropertiesToGoal=True):
+def compileActionSetProperties(sas_task, properties, actionSets, addPropertiesToGoal=False):
 
     if len(properties) == 0:
         return
@@ -111,7 +112,7 @@ def compileActionSetProperties(sas_task, properties, actionSets, addPropertiesTo
     eval_phase_var_id = addChangePhase(sas_task)
 
     for prop in properties:
-        addPropertySatVariables(sas_task, prop, addPropertiesToGoal)   
+        addPropertySatVariables(sas_task, prop, addPropertiesToGoal)
         addPropertyCheckingActions(sas_task, prop, actionSets, eval_phase_var_id)
 
     ####################### GOALS ########################

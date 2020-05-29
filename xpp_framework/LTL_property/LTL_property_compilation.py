@@ -77,7 +77,8 @@ def addFluents(automata, id, sas_task):
     #add to the initial state of the planning task if the initial state of the automata is accepting
     sas_task.init.values.append(int(automata.init.accepting))
     #in the goal the automata has to be in an accepting state
-    sas_task.goal.pairs.append((automata.accept_var, 1))
+    #sas_task.goal.pairs.append((automata.accept_var, 1))
+
 
 #add the transitions of the automata to the planning task
 def automataTransitionOperators(automata, sas_task, actionSets):
@@ -296,6 +297,10 @@ def compileLTLProperties(only_add_to_SAS, sas_task, properties, actionSets):
             name, f = p.SAS_repr(actionSets)
             sas_task.addLTLProperty(name, f)
     else:
+        # generate automaton representation for each ltl property
+        for prop in properties:
+            prop.generateAutomataRepresentation()
+
         # compile properties into the task
         print("Encode LTL properties into task.")
 
@@ -307,6 +312,7 @@ def compileLTLProperties(only_add_to_SAS, sas_task, properties, actionSets):
             #print(str(a))
             addFluents(automata, i, sas_task) #also addd the sync vars
             new_operators.append(automataTransitionOperators(automata, sas_task, actionSets))
+            p.var_id = automata.accept_var; # the property is excepted if the automata excepts it
 
 
         add_sync_conditions(sas_task, new_operators, properties, world_sync_var)

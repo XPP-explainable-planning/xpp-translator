@@ -22,9 +22,15 @@ class Action:
     def fromJSON(json, typeObjectMap):
         newAction = Action(json["name"], None)
 
-        for param in json["args"]:
+        params = []
+        if 'params' in json:
+            params = json["params"];
+        if 'args' in json:
+            params = json["args"];
 
-            # if the param is a type instantiate the action with each object of the corresponsing type
+        for param in params:
+
+            # if the param is a type instantiate the action with each object of the corresponding type
             # it does not matter if any of the combinations does not exists in the planning task
             if param in typeObjectMap:
                 newAction.addParam("*")
@@ -110,7 +116,7 @@ class ActionSet:
         s = "***************************\n"
         s += self.name + "\n"
         s += "state_set: " + str(self.state_set) + "\n"
-        s += "Number: " + str(len(self.actions)) + "\n" 
+        s += "var_id: " + str(self.var_id) + "\n"
         s += "Actions:\n"
         for a in self.actions:
             s += str(a) + "\n"

@@ -733,9 +733,9 @@ def main():
     xpp_framework.run(options, task, sas_task)
 
     #take a look
-    #print("-------------- Properties compilied ----------------------")
-    #for v in sas_task.variables.value_names:
-    #    print(v)
+    # print("-------------- Properties compilied ----------------------")
+    # for v in sas_task.variables.value_names:
+    #     print(v)
 
     #print("Operators:")
     #for o in sas_task.operators:

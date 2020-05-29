@@ -87,9 +87,9 @@ class Operator:
         elif parts[0] == "&&": 
             return LAnd.parse(parts)
 
-        elif parts[0] == "<>": 
+        elif parts[0] == "<>" or parts[0] == "F":
             return OpSometimes.parse(parts)
-        elif parts[0] == "[]": 
+        elif parts[0] == "[]" or parts[0] == "G":
             return OpAlways.parse(parts)
         elif parts[0] == "X": 
             return OpNext.parse(parts)
@@ -135,8 +135,9 @@ class LConstant(Operator):
     def addPostfix(self, fix):
         return LConstant(self.name + fix, self.id)
 
-    def replaceConstantsName(self, map):
-        return LConstant(map[self.name], self.id)
+    def replaceConstantsName(self, replace_map):
+        # assert self.name in replace_map, self.name + " not in " + str(replace_map)
+        return LConstant(replace_map[self.name] if self.name in replace_map else self.name, self.id)
 
     def toPrefixForm(self):
         return self.name
@@ -352,7 +353,7 @@ class OpSometimes(Operator):
     @staticmethod
     def parse(parts):
         operatorString = parts.pop(0)
-        assert(operatorString == "<>")
+        assert(operatorString == "<>" or operatorString == "F")
         (operand, rest, constants) = Operator.parse(parts)
 
         return (OpSometimes(operand), rest, constants)
@@ -375,7 +376,7 @@ class OpAlways(Operator):
     @staticmethod
     def parse(parts):
         operatorString = parts.pop(0)
-        assert(operatorString == "[]")
+        assert(operatorString == "[]" or operatorString == "G")
         (operand, rest, constants) = Operator.parse(parts)
 
         return (OpAlways(operand), rest, constants)

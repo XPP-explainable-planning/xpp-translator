@@ -25,6 +25,8 @@ class Condition(object):
             part.dump(indent + "  ")
     def _dump(self):
         return self.__class__.__name__
+    def to_JSON(self):
+        return "[" + ",".join("\"" + a.to_JSON() + "\"" for a in self.parts) + "]"
     def _postorder_visit(self, method_name, *args):
         part_results = [part._postorder_visit(method_name, *args)
                         for part in self.parts]
@@ -262,6 +264,9 @@ class Literal(Condition):
         return self.__class__(self.predicate, new_args)
     def free_variables(self):
         return set(arg for arg in self.args if arg[0] == "?")
+
+    def to_JSON(self):
+        return self.predicate + "(" + ",".join(self.args) + ")"
 
 class Atom(Literal):
     negated = False

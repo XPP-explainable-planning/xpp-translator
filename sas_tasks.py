@@ -19,6 +19,8 @@ class SASTask:
         self.mutexes = mutexes
         self.init = init
         self.goal = goal
+        self.soft_goal = SASSoftGoal()
+        self.hard_goal = SASHardGoal()
         self.operators = sorted(operators, key=lambda op: (
             op.name, op.prevail, op.pre_post))
         self.axioms = sorted(axioms, key=lambda axiom: (
@@ -38,6 +40,12 @@ class SASTask:
 
     def addLTLProperty(self, name, formula):
         self.LTLProperties.properties.append((name, formula))
+
+    def addHardGoalFact(self, pair):
+        self.hard_goal.add_goal_fact(pair)
+
+    def addSoftGoalFact(self, pair):
+        self.soft_goal.add_goal_fact(pair)
 
     def validate(self):
         """Fail an assertion if the task is invalid.
@@ -81,6 +89,10 @@ class SASTask:
         self.init.dump()
         print("goal:")
         self.goal.dump()
+        print("softgoal:")
+        self.soft_goal.dump()
+        print("hardgoal:")
+        self.hard_goal.dump()
         print("%d operators:" % len(self.operators))
         for operator in self.operators:
             operator.dump()
@@ -113,6 +125,8 @@ class SASTask:
             mutex.output(stream)
         self.init.output(stream)
         self.goal.output(stream)
+        self.hard_goal.output(stream)
+        self.soft_goal.output(stream)
         self.question.output(stream)
         self.entail.output(stream)
         self.LTLProperties.output(stream)
@@ -277,8 +291,25 @@ class SASInit:
 
 
 class SASGoal:
-    def __init__(self, pairs):
+    def __init__(self, pairs=None):
+        if pairs is None:
+            pairs = []
+        self.goal_type = 'goal'
         self.pairs = sorted(pairs)
+
+    def __contains__(self, item):
+        return item in self.pairs
+
+    def add_goal_fact(self, pair):
+        self.pairs = sorted(self.pairs + [pair])
+
+    def remove_goal_fact(self, pair):
+        self.pairs.remove(pair)
+        self.pairs = sorted(self.pairs)
+
+    def reset_facts(self, new_facts):
+        self.pairs = new_facts
+        self.pairs = sorted(self.pairs)
 
     def validate(self, variables):
         """Assert that the goal is nonempty and a valid condition."""
@@ -290,7 +321,7 @@ class SASGoal:
             print("v%d: %d" % (var, val))
 
     def output(self, stream):
-        print("\"goal\": [", file=stream)
+        print("\"" + self.goal_type + "\": [", file=stream)
         for var, val in self.pairs:
             print("{", file=stream)
             print("\"var\":" + var, file=stream)
@@ -299,14 +330,29 @@ class SASGoal:
         print("]", file=stream)
 
     def output(self, stream):
-        print("begin_goal", file=stream)
+        print("begin_" + self.goal_type, file=stream)
         print(len(self.pairs), file=stream)
         for var, val in self.pairs:
             print(var, val, file=stream)
-        print("end_goal", file=stream)
+        print("end_" + self.goal_type, file=stream)
 
     def get_encoding_size(self):
         return len(self.pairs)
+
+
+
+class SASSoftGoal(SASGoal):
+
+    def __init__(self):
+        super().__init__()
+        self.goal_type = 'soft_goal'
+
+
+class SASHardGoal(SASGoal):
+
+    def __init__(self):
+        super().__init__()
+        self.goal_type = 'hard_goal'
 
 class SASEntailment:
 

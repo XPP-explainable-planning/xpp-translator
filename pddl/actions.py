@@ -38,15 +38,19 @@ class Action(object):
         else:
             print("  None")
 
+    @staticmethod
+    def parameter_to_JSON(param):
+        s = "\t{\n"
+        s += "\t\t\"name\": \"" + param.name + "\",\n"
+        s += "\t\t\"type\": \"" + param.type_name + "\"\n"
+        s += "\t}"
+        return s
+
     def to_json(self):
         s = "{\n"
-        s += "\"name\": " + self.name + "\n"
+        s += "\"name\": \"" + self.name + "\",\n"
         s += "\"parameters\": [\n"
-        for ob in self.parameters:
-            s += "\t{\n"
-            s += "\t\t\"name\": \"" + ob.name + "\",\n"
-            s += "\t\t\"type\": \"" + ob.type_name + "\"\n"
-            s += "\t},\n"
+        s += ",\n".join([self.parameter_to_JSON(p) for p in self.parameters])
         s += "]\n"
         #s += "\"precondition\": [" + ", ".join(self.precondition) + "]"
         #s += "\"effects\": [" + ", ".join([e.to_json() for e in self.effects]) + "]"

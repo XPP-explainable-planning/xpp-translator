@@ -1,8 +1,13 @@
 from . import AS_property
-from . import action_sets
+from . import action_sets as action_set_comp
 from . import LTL_property
 from .parser import parse
 from .general import question
+from .general import ExplanationSetting
+from .general.special_goals import set_goals
+
+# global setting
+EXPSET = ExplanationSetting()
 
 
 def run(options, task, sas_task):
@@ -23,17 +28,21 @@ def run(options, task, sas_task):
         #print("++++++++++ typeObjectMap ++++++++++")
         #print(typeObjectMap)
 
-        (actionSets, AS_properties, LTL_properties) = parse(properties_path, typeObjectMap)
+        parse(properties_path, typeObjectMap, EXPSET)
 
-        for s in actionSets.values():
-            action_sets.compileActionSet(sas_task, s)
+        for name, s in EXPSET.action_sets.items():
+            action_set_comp.compileActionSet(sas_task, s)
 
-        AS_property.compileActionSetProperties(sas_task, AS_properties, actionSets)
+        AS_property.compileActionSetProperties(sas_task, EXPSET.get_action_set_properties(), EXPSET.action_sets)
 
-        LTL_property.compileLTLProperties(options.only_add_LTL_prop_to_SAS, sas_task, LTL_properties, actionSets)
-    
+        LTL_property.compileLTLProperties(options.only_add_LTL_prop_to_SAS, sas_task, EXPSET.get_ltl_properties(), EXPSET.action_sets)
 
 
+    # soft and hard goals
+    set_goals(sas_task, EXPSET)
+
+
+    # TODO if we have proper hard and soft goal handling a separate question file is not neaded anymore
     # add question (subset of goal facts) for online explanation
     if options.question != "None":
         print("Add questions")

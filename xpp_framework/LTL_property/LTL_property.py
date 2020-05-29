@@ -13,16 +13,16 @@ class LTLProperty(PlanProperty):
         # automaton representation
         self.genericFormula = None
         self.automata = None
-        self.generateAutomataRepresentation(constants)
+
         
     def SAS_repr(self, actionSets):
         return self.name, self.formula.SAS_repr(actionSets)
 
-    def generateAutomataRepresentation(self, constants):
+    def generateAutomataRepresentation(self):
         constant_name_map = {}
         constant_id_map = {}
         #generate map for LTL2B friendly names
-        constants = removeDuplicates(constants)
+        constants = removeDuplicates(self.constants)
         for i in range(len(constants)):
             constant_id_map[constants[i]] = "c" + str(i)
             constant_name_map["c" + str(i)] = constants[i]
@@ -64,7 +64,7 @@ class LTLProperty(PlanProperty):
     def fromJSON(json, typeObjectMap):
         (formula, rest, constants) = logic_formula.parseFormula(json['formula'])
         new_property = LTLProperty(json['name'], formula, constants)
-        for actionSets_json in json['action-sets']:
+        for actionSets_json in json['actionSets']:
             new_property.add_action_set(ActionSet.fromJSON(actionSets_json, typeObjectMap, True))
         return new_property
 
