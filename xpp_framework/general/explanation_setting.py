@@ -48,9 +48,12 @@ class ExplanationSetting:
     def has_hard_goals(self):
         return len(self.hard_goals) > 0
 
+    def has_soft_goals(self):
+        return len(self.soft_goals) > 0
+
     def add_hard_goal(self, goal):
-        print("Hard goals: ")
-        print(self.hard_goals)
+        # print("Hard goals: ")
+        # print(self.hard_goals)
         assert goal not in self.soft_goals
         assert goal not in self.hard_goals, "Already contained: " + str(goal)
         self.hard_goals.append(goal)

@@ -43,7 +43,7 @@ class Goal:
 # the soft or in the hard goals
 def set_goals(sas_task, EXPSET):
     print("****************************************************************************")
-    if EXPSET.has_hard_goals():
+    if EXPSET.has_hard_goals() or EXPSET.has_soft_goals():
         print("hard and soft goals are specified")
         # add hard goals
         for hg in EXPSET.hard_goals:
