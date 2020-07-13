@@ -14,7 +14,7 @@ class Goal:
             prop = EXPSET.get_property(self.var_name)
             if prop:
                 self.var_id = prop.var_id
-                self.value = 1 # 1 means prop has to be satisfied
+                self.value = prop.var_sat_goal_value
             else:
                 self.var_id, self.value = literalVarValue(sas_task, self.var_name)
             assert self.var_id != None and self.value != None, "ERROR: invalid goal"

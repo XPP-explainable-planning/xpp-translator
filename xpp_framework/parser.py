@@ -1,5 +1,6 @@
 import json
 
+from .G_property.goal_property import GoalProperty
 from .AS_property.action_set_property import ActionSetProperty
 from .LTL_property.LTL_property import LTLProperty
 from xpp_framework.general.special_goals import Goal
@@ -17,6 +18,9 @@ def parse(path, typeObjectMap, EXPSET):
         elif p_json['type'] == 'LTL':
             property = LTLProperty.fromJSON(p_json, typeObjectMap)
             EXPSET.add_ltl_property(property)
+        elif p_json['type'] == 'G':
+            property = GoalProperty.fromJSON(p_json, typeObjectMap)
+            EXPSET.add_goal_property(property)
         else:
             assert False, "Unknown property type: " + p_json['type']
         for set in property.get_action_sets():

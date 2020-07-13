@@ -1,6 +1,7 @@
 from . import AS_property
 from . import action_sets as action_set_comp
 from . import LTL_property
+from . import G_property
 from .parser import parse
 from .general import question
 from .general import ExplanationSetting
@@ -37,6 +38,8 @@ def run(options, task, sas_task):
 
         LTL_property.compileLTLProperties(options.only_add_LTL_prop_to_SAS, sas_task, EXPSET.get_ltl_properties(), EXPSET.action_sets)
 
+        G_property.compileGoalProperties(sas_task, EXPSET.get_goal_properties())
+
 
     # soft and hard goals
     set_goals(sas_task, EXPSET)
@@ -44,9 +47,9 @@ def run(options, task, sas_task):
 
     # TODO if we have proper hard and soft goal handling a separate question file is not neaded anymore
     # add question (subset of goal facts) for online explanation
-    if options.question != "None":
-        print("Add questions")
-        question.add_question(options.question, sas_task)
+    # if options.question != "None":
+    #     print("Add questions")
+    #     question.add_question(options.question, sas_task)
     
     #TODO
     #if options.property_type == 2:

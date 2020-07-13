@@ -9,6 +9,7 @@ class PlanProperty:
         self.constants = []
         # id of the sat variable in the SAS encoding
         self.var_id = None
+        self.var_sat_goal_value = 1 # 1 means prop has to be satisfied
 
     def add_action_set(self, s):
         self.actionSets.append(s)
