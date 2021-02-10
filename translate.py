@@ -716,6 +716,8 @@ def main():
 
     #predicate_dict_generator.generateDictFromTask(task)
 
+    print("#########################################################")
+    print("Write FDR json file")
     file = open("fdr.json", "w")
     task.to_json(file)
     sas_task = pddl_to_sas(task)

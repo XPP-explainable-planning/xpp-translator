@@ -76,7 +76,6 @@ def parseNFA(path):
         line = lines.pop(0)
         line = line.replace("\t", "")
         line = line.replace("\n", "")
-        #print("|" + line + "|")
 
         if line.startswith("never") or line.startswith("}"):
             continue
