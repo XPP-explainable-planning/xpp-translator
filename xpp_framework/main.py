@@ -40,20 +40,12 @@ def run(options, task, sas_task):
 
         G_property.compileGoalProperties(sas_task, EXPSET.get_goal_properties())
 
+        set_goals(sas_task, EXPSET)
+        return True
+    else:
+        return False
 
-    # soft and hard goals
-    set_goals(sas_task, EXPSET)
 
 
-    # TODO if we have proper hard and soft goal handling a separate question file is not neaded anymore
-    # add question (subset of goal facts) for online explanation
-    # if options.question != "None":
-    #     print("Add questions")
-    #     question.add_question(options.question, sas_task)
-    
-    #TODO
-    #if options.property_type == 2:
-    #    print("--------------------------- ENTAILMENT COMPILATION ------------------------------------------------")
-    #    properties = action_set_property.addActionSetPropertiesToTask(path, task, sas_task, options, False, True)
-    #    #entailment.entailCompilation.addEntailmentsToTask(sas_task, properties)
-    #    entailment.entailCompilation.addEntailmentsToTask(sas_task, properties)
+
+

@@ -8,7 +8,8 @@ class Goal:
         self.value = value
 
     def get_sas_fact(self, sas_task, EXPSET):
-        if self.var_id != None and self.value != None:
+
+        if self.var_id is not None and self.value is not None:
             return self.var_id, self.value
         if self.var_name:
             prop = EXPSET.get_property(self.var_name)
@@ -17,7 +18,7 @@ class Goal:
                 self.value = prop.var_sat_goal_value
             else:
                 self.var_id, self.value = literalVarValue(sas_task, self.var_name)
-            assert self.var_id != None and self.value != None, "ERROR: invalid goal"
+            assert self.var_id is not None and self.value is not None, "ERROR: invalid goal: " + self.var_name
             return self.var_id, self.value
 
     def __eq__(self, other):

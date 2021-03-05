@@ -133,7 +133,7 @@ def automataTransitionOperators(automata, sas_task, actionSets):
                         # world variables
                         else:
                             new_values = literalVarValue(sas_task, l.constant, l.negated)
-                            assert new_values, "Constant " + str(l.constant) + " does not exist."
+                            assert new_values, "Constant " + str(l.constant) + " does not exist. " + str(sas_task.variables.value_names)
                             # check if auxiliary variable is necessary
                             if l.negated and len(new_values) > 1:
                                 if l.constant.name not in auxillary_vars:

@@ -710,7 +710,7 @@ def main():
                     del action.effects[index]
 
     # print("----------- PDDL-------------")
-    # task.dump()
+    #task.dump()
     # print("----------- PDDL-------------")
 
 
@@ -732,7 +732,20 @@ def main():
 
     dump_statistics(sas_task)
 
-    xpp_framework.run(options, task, sas_task)
+    modified = xpp_framework.run(options, task, sas_task)
+    # if modified:
+    #     with timers.timing("Detecting unreachable propositions", block=True):
+    #         try:
+    #             simplify.filter_unreachable_propositions(sas_task)
+    #         except simplify.Impossible:
+    #             return unsolvable_sas_task("Simplified to trivially false goal")
+    #         except simplify.TriviallySolvable:
+    #             return solvable_sas_task("Simplified to empty goal")
+    #
+    #     with timers.timing("Reordering and filtering variables", block=True):
+    #         variable_order.find_and_apply_variable_order(
+    #             sas_task, options.reorder_variables,
+    #             options.filter_unimportant_vars)
 
     #take a look
     # print("-------------- Properties compilied ----------------------")
