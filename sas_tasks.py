@@ -29,6 +29,7 @@ class SASTask:
         self.entail = SASEntailment()
         self.question = SASQuestion()
         self.LTLProperties = SASLTLProperty()
+        self.OSPconstraint = None
         if DEBUG:
             self.validate()
 
@@ -46,6 +47,9 @@ class SASTask:
 
     def addSoftGoalFact(self, pair):
         self.soft_goal.add_goal_fact(pair)
+
+    def set_osp_constraint(self, name, var_id, relaxation_order):
+        self.OSPconstraint = SASOSPConstraint(name, var_id, relaxation_order)
 
     def validate(self):
         """Fail an assertion if the task is invalid.
@@ -130,6 +134,8 @@ class SASTask:
         self.question.output(stream)
         self.entail.output(stream)
         self.LTLProperties.output(stream)
+        if self.OSPconstraint:
+            self.OSPconstraint.output(stream)
         
         print(len(self.operators), file=stream)
         for op in self.operators:
@@ -655,3 +661,33 @@ class SASAxiom:
 
     def get_encoding_size(self):
         return 1 + len(self.condition)
+
+
+class SASOSPConstraint:
+    def __init__(self, name, var_id, relaxation_order):
+        self.name = name
+        self.var_id = var_id
+        self.relaxation_order = relaxation_order
+
+    def validate(self, variables):
+        return True
+
+    def dump(self):
+        # TODO
+        print('TODO')
+
+    def to_JSON(self, stream):
+        # TODO
+        print('TODO')
+
+    def output(self, stream):
+        print("begin_osp_constraint", file=stream)
+        print(self.name, file=stream)
+        print(self.var_id, file=stream)
+        print(len(self.relaxation_order), file=stream)
+        for i, j in self.relaxation_order:
+            print(i, j, file=stream)
+        print("end_osp_constraint", file=stream)
+
+    def get_encoding_size(self):
+        return 2 + len(self.relaxation_order)

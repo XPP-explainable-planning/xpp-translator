@@ -10,6 +10,8 @@ class ExplanationSetting:
         self.hard_goals = []
         self.soft_goals = []
 
+        self.constraint = None
+
     def add_action_set(self, set):
         # assert set.name not in self.action_sets
         set.name = set.name + '_' + str(len(self.action_sets)) # unique name for each action set

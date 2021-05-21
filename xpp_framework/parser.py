@@ -4,6 +4,7 @@ from .G_property.goal_property import GoalProperty
 from .AS_property.action_set_property import ActionSetProperty
 from .LTL_property.LTL_property import LTLProperty
 from xpp_framework.general.special_goals import Goal
+from .depper_why_questions import osp_constraints
 
 # typeObjectMap maps from a type to a list of objects which have this type
 def parse(path, typeObjectMap, EXPSET):
@@ -32,3 +33,7 @@ def parse(path, typeObjectMap, EXPSET):
     if "hard_goals" in json_encoding and "soft_goals" in json_encoding:
         EXPSET.add_hard_goals(Goal.fromJSON(json_encoding["hard_goals"], EXPSET))
         EXPSET.add_soft_goals(Goal.fromJSON(json_encoding["soft_goals"], EXPSET))
+
+
+    if "constraint" in json_encoding:
+        EXPSET.constraint = osp_constraints.OspConstraint.parse(json_encoding["constraint"], typeObjectMap)

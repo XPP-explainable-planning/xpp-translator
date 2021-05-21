@@ -41,6 +41,8 @@ def run(options, task, sas_task):
         G_property.compileGoalProperties(sas_task, EXPSET.get_goal_properties())
 
         set_goals(sas_task, EXPSET)
+
+        EXPSET.constraint.add_to_task(sas_task)
         return True
     else:
         return False
