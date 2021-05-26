@@ -50,6 +50,8 @@ class SASTask:
 
     def set_osp_constraint(self, name, relaxation_order):
         self.OSPconstraint = SASOSPConstraint(name, relaxation_order)
+        assert self.OSPconstraint
+        print(self.OSPconstraint)
 
     def validate(self):
         """Fail an assertion if the task is invalid.
@@ -135,7 +137,10 @@ class SASTask:
         self.entail.output(stream)
         self.LTLProperties.output(stream)
         if self.OSPconstraint:
+            print("Add OSP constraint to SAS file.")
             self.OSPconstraint.output(stream)
+        else:
+            SASOSPConstraint.output_none(stream)
         
         print(len(self.operators), file=stream)
         for op in self.operators:
@@ -686,6 +691,14 @@ class SASOSPConstraint:
         for i, j in self.relaxation_order:
             print(i, j, file=stream)
         print("end_osp_constraint", file=stream)
+
+    @staticmethod
+    def output_none(stream):
+        print("begin_osp_constraint", file=stream)
+        print("NONE", file=stream)
+        print("0", file=stream)
+        print("end_osp_constraint", file=stream)
+
 
     def get_encoding_size(self):
         return 1 + len(self.relaxation_order)

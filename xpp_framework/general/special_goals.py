@@ -65,7 +65,7 @@ def set_goals(sas_task, EXPSET):
             print(gf)
             sas_task.addHardGoalFact(gf)
 
-        for pg in EXPSET.get_action_set_properties() + EXPSET.get_ltl_properties():
+        for pg in EXPSET.get_action_set_properties() + EXPSET.get_ltl_properties() + EXPSET.get_goal_properties():
             pair = Goal(pg.name).get_sas_fact(sas_task, EXPSET)
             sas_task.addSoftGoalFact(pair)
             sas_task.goal.pairs.append(pair)

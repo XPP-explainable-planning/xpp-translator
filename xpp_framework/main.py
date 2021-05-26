@@ -34,6 +34,10 @@ def run(options, task, sas_task):
         for name, s in EXPSET.action_sets.items():
             action_set_comp.compileActionSet(sas_task, s)
 
+        print("# AS properties: " + str(len(EXPSET.get_action_set_properties())))
+        print("# LTL properties: " + str(len(EXPSET.get_ltl_properties())))
+        print("# G properties: " + str(len(EXPSET.get_goal_properties())))
+
         AS_property.compileActionSetProperties(sas_task, EXPSET.get_action_set_properties(), EXPSET.action_sets)
 
         LTL_property.compileLTLProperties(options.only_add_LTL_prop_to_SAS, sas_task, EXPSET.get_ltl_properties(), EXPSET.action_sets)
@@ -42,7 +46,10 @@ def run(options, task, sas_task):
 
         set_goals(sas_task, EXPSET)
 
-        EXPSET.constraint.add_to_task(sas_task)
+        if EXPSET.constraint:
+            print("Add OSP constraint.")
+            EXPSET.constraint.add_to_task(sas_task)
+
         return True
     else:
         return False
