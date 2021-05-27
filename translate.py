@@ -729,13 +729,13 @@ def main():
 
     sas_task = pddl_to_sas(task)
 
-    print("--------------------  Variables --------------------")
-    for v in sas_task.variables.value_names:
-        print(v)
-
-    print("Operators:")
-    for o in sas_task.operators:
-       print(o.name)
+    # print("--------------------  Variables --------------------")
+    # for v in sas_task.variables.value_names:
+    #     print(v)
+    #
+    # print("Operators:")
+    # for o in sas_task.operators:
+    #    print(o.name)
 
     dump_statistics(sas_task)
 
