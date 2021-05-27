@@ -537,7 +537,8 @@ def pddl_to_sas(task):
         (relaxed_reachable, atoms, actions, axioms,
          reachable_action_params) = instantiate.explore(task)
 
-    #if not relaxed_reachable:
+    # still want to explore the MUGS
+    # if not relaxed_reachable:
     #    return unsolvable_sas_task("No relaxed solution")
 
     # HACK! Goals should be treated differently.
@@ -699,6 +700,11 @@ def main():
         task = pddl_parser.open(
             domain_filename=options.domain, task_filename=options.task)
 
+    # add relaxation actions from properties file to PDDL planning task
+    relaxation_order = xpp_framework.get_relaxation_order(options)
+    if relaxation_order:
+        task.add_relax_action(relaxation_order)
+
     with timers.timing("Normalizing task"):
         normalize.normalize(task)
 
@@ -710,7 +716,7 @@ def main():
                     del action.effects[index]
 
     # print("----------- PDDL-------------")
-    #task.dump()
+    # task.dump()
     # print("----------- PDDL-------------")
 
 
@@ -720,32 +726,21 @@ def main():
     print("Write FDR json file")
     file = open("fdr.json", "w")
     task.to_json(file)
+
     sas_task = pddl_to_sas(task)
 
-    # print("--------------------  Variables --------------------")
-    # for v in sas_task.variables.value_names:
-    #     print(v)
+    print("--------------------  Variables --------------------")
+    for v in sas_task.variables.value_names:
+        print(v)
 
-    #print("Operators:")
-    #for o in sas_task.operators:
-    #    print(o.name)
+    print("Operators:")
+    for o in sas_task.operators:
+       print(o.name)
 
     dump_statistics(sas_task)
 
-    modified = xpp_framework.run(options, task, sas_task)
-    # if modified:
-    #     with timers.timing("Detecting unreachable propositions", block=True):
-    #         try:
-    #             simplify.filter_unreachable_propositions(sas_task)
-    #         except simplify.Impossible:
-    #             return unsolvable_sas_task("Simplified to trivially false goal")
-    #         except simplify.TriviallySolvable:
-    #             return solvable_sas_task("Simplified to empty goal")
-    #
-    #     with timers.timing("Reordering and filtering variables", block=True):
-    #         variable_order.find_and_apply_variable_order(
-    #             sas_task, options.reorder_variables,
-    #             options.filter_unimportant_vars)
+    xpp_framework.run(options, task, sas_task)
+
 
     #take a look
     # print("-------------- Properties compilied ----------------------")

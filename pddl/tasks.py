@@ -2,6 +2,9 @@ from __future__ import print_function
 
 from . import axioms
 from . import predicates
+from . import conditions
+from . import effects
+from . import actions
 
 
 class Task(object):
@@ -29,6 +32,20 @@ class Task(object):
         self.predicates.append(predicates.Predicate(name, parameters))
         self.axioms.append(axiom)
         return axiom
+
+    def add_relax_action(self, fact_order):
+
+        for i in range(len(fact_order) - 1):
+            fact0 = fact_order[i]
+            fact1 = fact_order[i + 1]
+            precondition = conditions.Atom(fact0[0], fact0[1:])
+            eff_set = conditions.Atom(fact1[0], fact1[1:])
+            eff_unset = conditions.NegatedAtom(fact0[0], fact0[1:])
+            effs = [effects.Effect([], conditions.Truth(), eff_set),
+                    effects.Effect([], conditions.Truth(), eff_unset)]
+
+            action = actions.Action('relax_' + str(i), [], 0, precondition, effs, 0)
+            self.actions.append(action)
 
     def dump(self):
         print("Problem %s: %s [%s]" % (
@@ -90,15 +107,17 @@ class Task(object):
         print("]", file=stream)
         print("}", file=stream)
 
+
 class Requirements(object):
     def __init__(self, requirements):
         self.requirements = requirements
         for req in requirements:
             assert req in (
-              ":strips", ":adl", ":typing", ":negation", ":equality",
-              ":negative-preconditions", ":disjunctive-preconditions",
-              ":existential-preconditions", ":universal-preconditions",
-              ":quantified-preconditions", ":conditional-effects",
-              ":derived-predicates", ":action-costs"), req
+                ":strips", ":adl", ":typing", ":negation", ":equality",
+                ":negative-preconditions", ":disjunctive-preconditions",
+                ":existential-preconditions", ":universal-preconditions",
+                ":quantified-preconditions", ":conditional-effects",
+                ":derived-predicates", ":action-costs"), req
+
     def __str__(self):
         return ", ".join(self.requirements)

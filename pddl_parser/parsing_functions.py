@@ -287,6 +287,11 @@ def parse_action(alist, type_dict, predicate_dict):
     for rest in iterator:
         assert False, rest
     if eff:
+        # print("------------------------------------")
+        # print(name)
+        # print(parameters)
+        # print(precondition)
+        # print(eff)
         return pddl.Action(name, parameters, len(parameters),
                            precondition, eff, cost)
     else:
